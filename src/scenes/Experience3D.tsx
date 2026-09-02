@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, Suspense } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows } from '@react-three/drei';
 import { BoxModel } from '../models/BoxModel';
 
@@ -63,27 +63,27 @@ const CameraController: React.FC<{ scrollProgress: number }> = ({ scrollProgress
 
     // Responsive aspect ratio compensation for mobile devices (portrait screens)
     const aspect = state.viewport.aspect;
-    const mobileZoomFactor = aspect < 1.0 ? Math.min(1.5, 0.95 / aspect) : 1.0;
+    const mobileZoomFactor = aspect < 1.0 ? Math.min(1.35, 0.95 / aspect) : 1.0;
 
     if (scrollProgress < 0.15) {
       // SHOT 01: Wide closed-box 3/4 hero
       const t = scrollProgress / 0.15;
-      targetCamPos.set(0, (2.6 - t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.35), (5.0 - t * 0.4) * mobileZoomFactor);
+      targetCamPos.set(0, (2.6 - t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.25), (5.0 - t * 0.4) * mobileZoomFactor);
       targetLook.set(0, 0, 0);
     } else if (scrollProgress >= 0.15 && scrollProgress < 0.40) {
       // SHOT 02: Camera rises and angles as lid opens
       const t = (scrollProgress - 0.15) / 0.25;
-      targetCamPos.set(0, (2.4 + t * 0.9) * (1 + (mobileZoomFactor - 1) * 0.35), (4.6 - t * 0.8) * mobileZoomFactor);
+      targetCamPos.set(0, (2.4 + t * 0.9) * (1 + (mobileZoomFactor - 1) * 0.25), (4.6 - t * 0.8) * mobileZoomFactor);
       targetLook.set(0, t * 0.25, 0);
     } else if (scrollProgress >= 0.40 && scrollProgress < 0.65) {
       // SHOT 03: Looks directly into box as tissue reveals
       const t = (scrollProgress - 0.40) / 0.25;
-      targetCamPos.set(0, (3.3 + t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.35), (3.8 - t * 0.4) * mobileZoomFactor);
+      targetCamPos.set(0, (3.3 + t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.25), (3.8 - t * 0.4) * mobileZoomFactor);
       targetLook.set(0, 0.25, 0);
     } else {
       // SHOT 04: Smoothly recedes as editorial content flows
       const t = Math.min(1, (scrollProgress - 0.65) / 0.35);
-      targetCamPos.set(0, (3.5 - t * 0.8) * (1 + (mobileZoomFactor - 1) * 0.35), (3.4 + t * 1.5) * mobileZoomFactor);
+      targetCamPos.set(0, (3.5 - t * 0.8) * (1 + (mobileZoomFactor - 1) * 0.25), (3.4 + t * 1.5) * mobileZoomFactor);
       targetLook.set(0, 0.25 - t * 0.4, 0);
     }
 
@@ -143,6 +143,35 @@ const StudioLighting: React.FC<{ scrollProgress: number }> = ({ scrollProgress }
   );
 };
 
+// Responsive Box Scene Container: Scales the 3D model smaller on mobile screens only
+const ResponsiveBoxScene: React.FC<{ scrollProgress: number }> = ({ scrollProgress }) => {
+  const { viewport } = useThree();
+  const aspect = viewport.aspect;
+  
+  // Mobile check: On desktop/laptop/tablet aspect >= 1 (scale 1.0); on mobile portrait screens aspect < 1.0 (scale down to ~0.65)
+  const isMobile = aspect < 1.0;
+  const mobileScale = isMobile ? Math.max(0.62, Math.min(0.70, aspect * 0.9)) : 1.0;
+
+  return (
+    <>
+      <group scale={mobileScale} position={[0, isMobile ? 0.08 : 0, 0]}>
+        <Suspense fallback={null}>
+          <BoxModel scrollProgress={scrollProgress} />
+        </Suspense>
+      </group>
+
+      <ContactShadows
+        position={[0, -0.78 * (isMobile ? mobileScale : 1.0), 0]}
+        opacity={0.7}
+        scale={isMobile ? 6.0 : 8}
+        blur={2.4}
+        far={3.5}
+        color="#000000"
+      />
+    </>
+  );
+};
+
 export const Experience3D: React.FC<Experience3DProps> = ({
   scrollProgress,
 }) => {
@@ -162,21 +191,11 @@ export const Experience3D: React.FC<Experience3DProps> = ({
         <CameraController scrollProgress={scrollProgress} />
         <StudioLighting scrollProgress={scrollProgress} />
         <CosmicParticles />
-
-        <Suspense fallback={null}>
-          <BoxModel scrollProgress={scrollProgress} />
-        </Suspense>
-
-        <ContactShadows
-          position={[0, -0.78, 0]}
-          opacity={0.7}
-          scale={8}
-          blur={2.4}
-          far={3.5}
-          color="#000000"
-        />
+        <ResponsiveBoxScene scrollProgress={scrollProgress} />
       </Canvas>
     </div>
   );
 };
+
+export default Experience3D;
 
