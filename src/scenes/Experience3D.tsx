@@ -65,24 +65,24 @@ const CameraController: React.FC<{ scrollProgress: number }> = ({ scrollProgress
     const aspect = state.viewport.aspect;
     const mobileZoomFactor = aspect < 1.0 ? Math.min(1.35, 0.95 / aspect) : 1.0;
 
-    if (scrollProgress < 0.15) {
+    if (scrollProgress < 0.06) {
       // SHOT 01: Wide closed-box 3/4 hero
-      const t = scrollProgress / 0.15;
+      const t = scrollProgress / 0.06;
       targetCamPos.set(0, (2.6 - t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.25), (5.0 - t * 0.4) * mobileZoomFactor);
       targetLook.set(0, 0, 0);
-    } else if (scrollProgress >= 0.15 && scrollProgress < 0.40) {
+    } else if (scrollProgress >= 0.06 && scrollProgress < 0.32) {
       // SHOT 02: Camera rises and angles as lid opens
-      const t = (scrollProgress - 0.15) / 0.25;
+      const t = (scrollProgress - 0.06) / 0.26;
       targetCamPos.set(0, (2.4 + t * 0.9) * (1 + (mobileZoomFactor - 1) * 0.25), (4.6 - t * 0.8) * mobileZoomFactor);
       targetLook.set(0, t * 0.25, 0);
-    } else if (scrollProgress >= 0.40 && scrollProgress < 0.65) {
+    } else if (scrollProgress >= 0.32 && scrollProgress < 0.60) {
       // SHOT 03: Looks directly into box as tissue reveals
-      const t = (scrollProgress - 0.40) / 0.25;
+      const t = (scrollProgress - 0.32) / 0.28;
       targetCamPos.set(0, (3.3 + t * 0.2) * (1 + (mobileZoomFactor - 1) * 0.25), (3.8 - t * 0.4) * mobileZoomFactor);
       targetLook.set(0, 0.25, 0);
     } else {
       // SHOT 04: Smoothly recedes as editorial content flows
-      const t = Math.min(1, (scrollProgress - 0.65) / 0.35);
+      const t = Math.min(1, (scrollProgress - 0.60) / 0.38);
       targetCamPos.set(0, (3.5 - t * 0.8) * (1 + (mobileZoomFactor - 1) * 0.25), (3.4 + t * 1.5) * mobileZoomFactor);
       targetLook.set(0, 0.25 - t * 0.4, 0);
     }
@@ -104,7 +104,7 @@ const StudioLighting: React.FC<{ scrollProgress: number }> = ({ scrollProgress }
   useFrame(() => {
     if (warmEagleLightRef.current) {
       let warmIntensity = 0.3;
-      if (scrollProgress >= 0.35 && scrollProgress <= 0.70) {
+      if (scrollProgress >= 0.25 && scrollProgress <= 0.65) {
         warmIntensity = 1.4;
       }
       warmEagleLightRef.current.intensity = THREE.MathUtils.lerp(

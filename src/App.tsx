@@ -132,19 +132,19 @@ export const App: React.FC = () => {
 
   // Unboxing Step Stage Info
   const getStageInfo = useCallback(() => {
-    if (scrollProgress < 0.18) {
+    if (scrollProgress < 0.08) {
       return {
         tag: 'STAGE 01 / 04',
         title: 'THE SACRED CARRIER',
         sub: 'Closed Matte Presentation Box • Scroll down to begin unboxing',
       };
-    } else if (scrollProgress < 0.45) {
+    } else if (scrollProgress < 0.34) {
       return {
         tag: 'STAGE 02 / 04',
         title: 'BREAKING THE SEAL',
         sub: 'Lid Pivots Back • "YOU DON\'T FOLLOW TRENDS. YOU SET YOUR ORBIT."',
       };
-    } else if (scrollProgress < 0.70) {
+    } else if (scrollProgress < 0.62) {
       return {
         tag: 'STAGE 03 / 04',
         title: 'TRANSLUCENT VEIL',
@@ -202,7 +202,7 @@ export const App: React.FC = () => {
       <div
         className="black-gradient-backdrop"
         style={{
-          opacity: Math.min(1, Math.max(0, (scrollProgress - 0.26) / 0.22)),
+          opacity: Math.min(1, Math.max(0, (scrollProgress - 0.20) / 0.22)),
         }}
       />
 
@@ -210,8 +210,8 @@ export const App: React.FC = () => {
       <div
         className="hud-stage-card glass-panel"
         style={{
-          opacity: Math.max(0, Math.min(1, (0.76 - scrollProgress) / 0.08)),
-          pointerEvents: scrollProgress > 0.72 ? 'none' : undefined,
+          opacity: Math.max(0, Math.min(1, (0.42 - scrollProgress) / 0.06)),
+          pointerEvents: scrollProgress > 0.38 ? 'none' : undefined,
           transition: 'opacity 0.25s ease',
         }}
       >
@@ -233,8 +233,8 @@ export const App: React.FC = () => {
       <div
         className="hud-progress-meter"
         style={{
-          opacity: Math.max(0, Math.min(1, (0.76 - scrollProgress) / 0.08)),
-          pointerEvents: scrollProgress > 0.72 ? 'none' : undefined,
+          opacity: Math.max(0, Math.min(1, (0.42 - scrollProgress) / 0.06)),
+          pointerEvents: scrollProgress > 0.38 ? 'none' : undefined,
           transition: 'opacity 0.25s ease',
         }}
       >

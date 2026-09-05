@@ -101,31 +101,31 @@ export const BoxModel: React.FC<BoxModelProps> = ({ scrollProgress }) => {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
 
-    // 1. Lid Open Animation with Physical Spring Easing (Scroll 0.15 -> 0.40)
+    // 1. Lid Open Animation with Physical Spring Easing (Scroll 0.06 -> 0.32)
     if (lidHingeRef.current) {
       let targetLidAngle = 0;
-      if (scrollProgress >= 0.15 && scrollProgress <= 0.40) {
-        const t = (scrollProgress - 0.15) / 0.25;
+      if (scrollProgress >= 0.06 && scrollProgress <= 0.32) {
+        const t = (scrollProgress - 0.06) / 0.26;
         const easeT = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         targetLidAngle = -easeT * (Math.PI * 0.64);
-      } else if (scrollProgress > 0.40) {
+      } else if (scrollProgress > 0.32) {
         targetLidAngle = -(Math.PI * 0.64);
       }
       lidHingeRef.current.rotation.x = THREE.MathUtils.lerp(lidHingeRef.current.rotation.x, targetLidAngle, 0.15);
     }
 
-    // 2. Physical Tissue Paper Opening with dynamic cloth/paper wave deformation (Scroll 0.33 -> 0.58)
+    // 2. Physical Tissue Paper Opening with dynamic cloth/paper wave deformation (Scroll 0.24 -> 0.52)
     if (tissueTopHingeRef.current && tissueBottomHingeRef.current) {
       let tOpening = 0;
       let tissueOpacity = 0.96;
 
-      if (scrollProgress >= 0.33 && scrollProgress <= 0.58) {
-        tOpening = (scrollProgress - 0.33) / 0.25;
-      } else if (scrollProgress > 0.58 && scrollProgress <= 0.72) {
+      if (scrollProgress >= 0.24 && scrollProgress <= 0.52) {
+        tOpening = (scrollProgress - 0.24) / 0.28;
+      } else if (scrollProgress > 0.52 && scrollProgress <= 0.66) {
         tOpening = 1.0;
-        const fadeT = (scrollProgress - 0.58) / 0.14;
+        const fadeT = (scrollProgress - 0.52) / 0.14;
         tissueOpacity = Math.max(0.1, 0.96 - fadeT * 0.86);
-      } else if (scrollProgress > 0.72) {
+      } else if (scrollProgress > 0.66) {
         tOpening = 1.0;
         tissueOpacity = 0.1;
       }
@@ -172,12 +172,12 @@ export const BoxModel: React.FC<BoxModelProps> = ({ scrollProgress }) => {
       tissueBottomMat.opacity = THREE.MathUtils.lerp(tissueBottomMat.opacity, tissueOpacity, 0.1);
     }
 
-    // 3. Box group subtle sink into black gradient veil (Scroll 0.40 -> 0.68)
+    // 3. Box group subtle sink into black gradient veil (Scroll 0.36 -> 0.65)
     if (boxGroupRef.current) {
       let boxY = 0;
       let boxScale = 1;
-      if (scrollProgress > 0.40) {
-        const t = Math.min(1, (scrollProgress - 0.40) / 0.28);
+      if (scrollProgress > 0.36) {
+        const t = Math.min(1, (scrollProgress - 0.36) / 0.29);
         boxY = -t * 3.0;
         boxScale = 1 - t * 0.42;
       }

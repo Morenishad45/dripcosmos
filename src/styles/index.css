@@ -485,9 +485,13 @@ html, body {
 
 .story-grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-top: 48px;
+}
+
+.story-carousel-controls {
+  display: none;
 }
 
 .story-interactive-card {
@@ -581,7 +585,7 @@ html, body {
 .preview-image-stage {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 285px;
   background: radial-gradient(circle at center, #181714 0%, #0c0c0c 100%);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1645,13 +1649,121 @@ html, body {
     min-height: 100vh;
   }
 
+  /* Mobile Story Cards Touch Carousel */
   .story-grid-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    position: relative;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
     gap: 16px;
+    padding: 10px 16px 20px 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+    margin-top: 32px;
+    scrollbar-width: none;
+  }
+
+  .story-grid-layout::-webkit-scrollbar {
+    display: none;
+  }
+
+  .story-interactive-card {
+    flex: 0 0 82%;
+    max-width: 320px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .story-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 25;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+
+  .story-carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    touch-action: manipulation;
+  }
+
+  .story-carousel-dot {
+    min-width: 42px;
+    height: 34px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(18, 18, 18, 0.85);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    transition: all 0.25s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .story-carousel-dot:active {
+    transform: scale(0.92);
+  }
+
+  .story-carousel-dot.active {
+    background: var(--accent-gold);
+    color: #080808;
+    border-color: var(--accent-gold);
+    font-weight: 700;
+    box-shadow: 0 0 16px rgba(229, 169, 60, 0.5);
+    transform: scale(1.06);
+  }
+
+  .story-carousel-dot.active:active {
+    transform: scale(1.0);
+  }
+
+  .story-carousel-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(18, 18, 18, 0.9);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .story-carousel-nav-btn:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+
+  .story-carousel-nav-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
   }
 
   .preview-image-stage {
-    height: clamp(280px, 42vh, 380px);
+    height: clamp(340px, 50vh, 450px);
   }
 
   .drops-grid-3x2 {

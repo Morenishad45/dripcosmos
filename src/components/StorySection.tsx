@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { PRODUCT_DATA } from '../data/productData';
-import { Eye, X } from 'lucide-react';
+import { Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { sound } from '../utils/audio';
 
 export const StorySection: React.FC = () => {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (selectedChapter === null) return;
@@ -23,6 +25,46 @@ export const StorySection: React.FC = () => {
     };
   }, [selectedChapter]);
 
+  const handleCarouselScroll = () => {
+    if (!carouselRef.current) return;
+    const container = carouselRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
+    const cards = container.querySelectorAll('.story-interactive-card');
+
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const el = card as HTMLElement;
+      const cardRect = el.getBoundingClientRect();
+      const cardCenter = cardRect.left + cardRect.width / 2;
+      const dist = Math.abs(containerCenter - cardCenter);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIdx = idx;
+      }
+    });
+
+    setActiveSlide(closestIdx);
+  };
+
+  const scrollToSlide = (idx: number) => {
+    if (!carouselRef.current) return;
+    sound.playClick();
+    const container = carouselRef.current;
+    const cards = container.querySelectorAll('.story-interactive-card');
+    const targetCard = cards[idx] as HTMLElement | undefined;
+    if (targetCard) {
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = targetCard.getBoundingClientRect();
+      const delta = (targetRect.left - containerRect.left + targetRect.width / 2) - (container.clientWidth / 2);
+      const targetLeft = container.scrollLeft + delta;
+      container.scrollTo({ left: targetLeft, behavior: 'smooth' });
+      setActiveSlide(idx);
+    }
+  };
+
   return (
     <section className="story-section-container">
       {/* Editorial Header */}
@@ -38,8 +80,12 @@ export const StorySection: React.FC = () => {
         </p>
       </div>
 
-      {/* 4-Card Editorial Grid */}
-      <div className="story-grid-layout">
+      {/* 4-Card Editorial Grid (Desktop Grid / Mobile Touch Carousel) */}
+      <div
+        ref={carouselRef}
+        onScroll={handleCarouselScroll}
+        className="story-grid-layout"
+      >
         {PRODUCT_DATA.storyChapters.map((chapter, idx) => (
           <div
             key={chapter.number}
@@ -81,6 +127,43 @@ export const StorySection: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Mobile-Only Carousel Controls */}
+      <div className="story-carousel-controls">
+        <button
+          type="button"
+          onClick={() => scrollToSlide(Math.max(0, activeSlide - 1))}
+          className="story-carousel-nav-btn"
+          disabled={activeSlide === 0}
+          aria-label="Previous Chapter"
+        >
+          <ChevronLeft style={{ width: 16, height: 16 }} />
+        </button>
+
+        <div className="story-carousel-dots">
+          {PRODUCT_DATA.storyChapters.map((ch, idx) => (
+            <button
+              key={ch.number}
+              type="button"
+              onClick={() => scrollToSlide(idx)}
+              className={`story-carousel-dot ${activeSlide === idx ? 'active' : ''}`}
+              aria-label={`Go to Chapter ${ch.number}`}
+            >
+              <span>{ch.number}</span>
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => scrollToSlide(Math.min(PRODUCT_DATA.storyChapters.length - 1, activeSlide + 1))}
+          className="story-carousel-nav-btn"
+          disabled={activeSlide === PRODUCT_DATA.storyChapters.length - 1}
+          aria-label="Next Chapter"
+        >
+          <ChevronRight style={{ width: 16, height: 16 }} />
+        </button>
       </div>
 
       {/* Story Detail Modal */}
