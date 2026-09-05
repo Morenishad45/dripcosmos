@@ -99,6 +99,7 @@ const CameraController: React.FC<{ scrollProgress: number }> = ({ scrollProgress
 // Dynamic Studio Lighting Rig
 const StudioLighting: React.FC<{ scrollProgress: number }> = ({ scrollProgress }) => {
   const warmEagleLightRef = useRef<THREE.DirectionalLight>(null);
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useFrame(() => {
     if (warmEagleLightRef.current) {
@@ -122,7 +123,7 @@ const StudioLighting: React.FC<{ scrollProgress: number }> = ({ scrollProgress }
         intensity={1.5}
         color="#FFFFFF"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={isSmallScreen ? [1024, 1024] : [2048, 2048]}
         shadow-camera-near={0.5}
         shadow-camera-far={20}
         shadow-camera-left={-4}
@@ -143,18 +144,22 @@ const StudioLighting: React.FC<{ scrollProgress: number }> = ({ scrollProgress }
   );
 };
 
-// Responsive Box Scene Container: Scales the 3D model smaller on mobile screens only
-const ResponsiveBoxScene: React.FC<{ scrollProgress: number }> = ({ scrollProgress }) => {
+// Responsive Box Scene Container: Scales the 3D model smaller on mobile screens only & supports drag rotation
+const ResponsiveBoxScene: React.FC<{ scrollProgress: number; dragRotationY: number }> = ({ scrollProgress, dragRotationY }) => {
   const { viewport } = useThree();
   const aspect = viewport.aspect;
   
-  // Mobile check: On desktop/laptop/tablet aspect >= 1 (scale 1.0); on mobile portrait screens aspect < 1.0 (scale down to ~0.65)
+  // Mobile check: On desktop/laptop/tablet aspect >= 1 (scale 1.0); on mobile portrait screens aspect < 1.0 (scale gracefully down to ~0.58-0.68)
   const isMobile = aspect < 1.0;
-  const mobileScale = isMobile ? Math.max(0.62, Math.min(0.70, aspect * 0.9)) : 1.0;
+  const mobileScale = isMobile ? Math.max(0.58, Math.min(0.70, aspect * 0.88)) : 1.0;
 
   return (
     <>
-      <group scale={mobileScale} position={[0, isMobile ? 0.08 : 0, 0]}>
+      <group
+        scale={mobileScale}
+        position={[0, isMobile ? 0.08 : 0, 0]}
+        rotation-y={dragRotationY}
+      >
         <Suspense fallback={null}>
           <BoxModel scrollProgress={scrollProgress} />
         </Suspense>
@@ -174,12 +179,14 @@ const ResponsiveBoxScene: React.FC<{ scrollProgress: number }> = ({ scrollProgre
 
 export const Experience3D: React.FC<Experience3DProps> = ({
   scrollProgress,
+  dragRotationY,
 }) => {
   return (
     <div className="canvas-container">
       <Canvas
         shadows
         camera={{ position: [0, 2.6, 5.0], fov: 42, near: 0.1, far: 30 }}
+        dpr={typeof window !== 'undefined' ? (window.innerWidth < 768 ? [1, 1.6] : [1, 2]) : [1, 2]}
         gl={{
           antialias: true,
           alpha: true,
@@ -191,7 +198,10 @@ export const Experience3D: React.FC<Experience3DProps> = ({
         <CameraController scrollProgress={scrollProgress} />
         <StudioLighting scrollProgress={scrollProgress} />
         <CosmicParticles />
-        <ResponsiveBoxScene scrollProgress={scrollProgress} />
+        <ResponsiveBoxScene
+          scrollProgress={scrollProgress}
+          dragRotationY={dragRotationY}
+        />
       </Canvas>
     </div>
   );

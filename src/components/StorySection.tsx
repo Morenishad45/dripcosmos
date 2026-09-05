@@ -91,29 +91,29 @@ export const StorySection: React.FC = () => {
             onClick={() => setSelectedChapter(null)}
           >
             <div
-              className="glass-panel-elevated modal-dialog"
+              className="glass-panel-elevated modal-dialog story-modal-dialog"
               onClick={(e) => e.stopPropagation()}
-              style={{ border: '1px solid rgba(229, 169, 60, 0.4)' }}
             >
               {/* Close Button */}
               <button
                 onClick={() => setSelectedChapter(null)}
-                style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}
+                className="story-modal-close-btn"
+                aria-label="Close Story Chapter"
               >
                 <X style={{ width: 18, height: 18 }} />
               </button>
 
               {/* Modal Image */}
-              <div style={{ flex: '1 1 50%', background: '#000', padding: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="story-modal-image-col">
                 <img
                   src={PRODUCT_DATA.storyChapters[selectedChapter].image}
                   alt={PRODUCT_DATA.storyChapters[selectedChapter].title}
-                  style={{ maxHeight: '65vh', width: 'auto', objectFit: 'contain', borderRadius: 16, boxShadow: '0 20px 40px rgba(0,0,0,0.8)' }}
+                  className="story-modal-img"
                 />
               </div>
 
               {/* Modal Narrative Content */}
-              <div style={{ flex: '1 1 50%', padding: '36px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div className="story-modal-content-col">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: 'var(--accent-gold)' }}>
                     CHAPTER {PRODUCT_DATA.storyChapters[selectedChapter].number} OF 04
@@ -124,17 +124,17 @@ export const StorySection: React.FC = () => {
                   </span>
                 </div>
 
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-primary)', marginBottom: 18 }}>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--text-primary)', marginBottom: 16 }}>
                   {PRODUCT_DATA.storyChapters[selectedChapter].title}
                 </h2>
 
-                <div style={{ width: 48, height: 2, background: 'var(--accent-gold)', marginBottom: 24 }} />
+                <div style={{ width: 48, height: 2, background: 'var(--accent-gold)', marginBottom: 20 }} />
 
-                <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 32 }}>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 28 }}>
                   {PRODUCT_DATA.storyChapters[selectedChapter].text}
                 </p>
 
-                <div style={{ paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
+                <div style={{ paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
                   <span>ANIMAL KINGDOM ARCHIVE</span>
                   <span style={{ color: 'var(--accent-gold)' }}>DRIP COSMOS</span>
                 </div>

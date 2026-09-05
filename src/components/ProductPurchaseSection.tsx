@@ -52,29 +52,29 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
     <section className="purchase-section-container">
       <div className="purchase-grid-layout">
         {/* Left Column: Garment Narrative & Technical Specifications */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-              <span style={{ padding: '4px 12px', borderRadius: 999, background: 'rgba(229, 169, 60, 0.15)', border: '1px solid rgba(229, 169, 60, 0.3)', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.15em', color: 'var(--accent-gold)' }}>
+        <div className="purchase-narrative-col">
+          <div className="purchase-header-block">
+            <div className="purchase-badge-row">
+              <span className="limited-edition-pill">
                 LIMITED EDITION • 001 / 500
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', color: 'var(--text-muted)' }}>
+              <span className="authentic-archive-tag">
                 AUTHENTIC ARCHIVE RELEASE
               </span>
             </div>
 
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, letterSpacing: '0.1em', color: '#F5F3ED', marginBottom: 16 }}>
+            <h2 className="purchase-product-title">
               {PRODUCT_DATA.productName}
             </h2>
 
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, opacity: 0.9 }}>
+            <p className="purchase-product-desc">
               Crafted from 280 GSM luxury combed organic cotton with custom drop-shoulder geometry. Each piece is delivered in a rigid magnetic presentation box with custom DC monogram tissue and 4 collector art story cards.
             </p>
           </div>
 
           {/* Garment Highlights */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-            <div className="glass-panel" style={{ padding: 24 }}>
+          <div className="garment-highlights-grid">
+            <div className="glass-panel highlight-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <Box style={{ width: 16, height: 16, color: 'var(--accent-gold)' }} />
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: '#F5F3ED' }}>
@@ -86,7 +86,7 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
               </p>
             </div>
 
-            <div className="glass-panel" style={{ padding: 24 }}>
+            <div className="glass-panel highlight-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <Scissors style={{ width: 16, height: 16, color: 'var(--accent-gold)' }} />
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: '#F5F3ED' }}>
@@ -100,11 +100,11 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
           </div>
 
           {/* Detailed Features List */}
-          <div className="glass-panel-elevated" style={{ padding: 28 }}>
+          <div className="glass-panel-elevated product-specs-card">
             <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.2em', color: 'var(--accent-gold)', textTransform: 'uppercase', marginBottom: 16 }}>
               PRODUCT SPECIFICATIONS
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, padding: 0 }}>
               {PRODUCT_DATA.features.map((feat, idx) => (
                 <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                   <Check style={{ width: 16, height: 16, color: 'var(--accent-gold)', flexShrink: 0, marginTop: 2 }} />
@@ -116,20 +116,20 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
         </div>
 
         {/* Right Column: Checkout & Size Selection Card */}
-        <div>
-          <div className="glass-panel-elevated" style={{ padding: '36px 40px', position: 'sticky', top: 120 }}>
+        <div className="purchase-checkout-col">
+          <div className="glass-panel-elevated product-checkout-card">
             {/* Price & Status */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24, paddingBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="checkout-price-row">
               <div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.15em', color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
+                <span className="checkout-price-label">
                   PRICE (GLOBAL SHIPPING INCLUDED)
                 </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 36, fontWeight: 700, color: '#F5F3ED' }}>
+                <span className="checkout-price-value">
                   ${PRODUCT_DATA.price} <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>{PRODUCT_DATA.currency}</span>
                 </span>
               </div>
               <div>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em' }}>
+                <span className="in-stock-pill">
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399' }} />
                   IN STOCK
                 </span>
@@ -137,7 +137,7 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
             </div>
 
             {/* Size Selector */}
-            <div style={{ marginBottom: 32 }}>
+            <div style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: '#F5F3ED' }}>
                   SELECT SIZE (OVERSIZED FIT)
@@ -187,13 +187,13 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
             </button>
 
             {/* Reassurance Badges */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
+            <div className="reassurance-badges-list">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Truck style={{ width: 14, height: 14, color: 'var(--text-secondary)' }} />
+                <Truck style={{ width: 14, height: 14, color: 'var(--text-secondary)', flexShrink: 0 }} />
                 <span>Complimentary Express Insured Worldwide Delivery</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ShieldCheck style={{ width: 14, height: 14, color: 'var(--text-secondary)' }} />
+                <ShieldCheck style={{ width: 14, height: 14, color: 'var(--text-secondary)', flexShrink: 0 }} />
                 <span>Verified Hand-Numbered Authenticity Certificate</span>
               </div>
             </div>
@@ -210,14 +210,14 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
             onClick={onCloseCart}
           >
             <div
-              style={{ width: '100%', maxWidth: 440, height: '100%', background: '#0e0e0e', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: 36, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '-20px 0 50px rgba(0,0,0,0.8)' }}
+              className="cart-drawer-panel"
               onClick={(e) => e.stopPropagation()}
             >
-              <div>
+              <div className="cart-drawer-top">
                 {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: 24 }}>
+                <div className="cart-drawer-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 30, height: 30, borderRadius: '50%', padding: 2, background: 'rgba(20,20,20,0.9)', border: '1px solid rgba(229, 169, 60, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', padding: 2, background: 'rgba(20,20,20,0.9)', border: '1px solid rgba(229, 169, 60, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <img src="/brand/logo_black.png" alt="Drip Cosmos" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} />
                     </div>
                     <div>
@@ -231,25 +231,26 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
                   </div>
                   <button
                     onClick={onCloseCart}
-                    style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8A8882', cursor: 'pointer' }}
+                    className="cart-close-btn"
+                    aria-label="Close Bag"
                   >
-                    <X style={{ width: 16, height: 16 }} />
+                    <X style={{ width: 18, height: 18 }} />
                   </button>
                 </div>
 
                 {/* Items List */}
                 {cartItems.length === 0 ? (
-                  <div style={{ padding: '80px 0', textAlign: 'center' }}>
+                  <div style={{ padding: '60px 0', textAlign: 'center' }}>
                     <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#8A8882', letterSpacing: '0.2em' }}>
                       YOUR BAG IS CURRENTLY EMPTY
                     </p>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div className="cart-items-scrollable">
                     {cartItems.map((item, idx) => (
-                      <div key={idx} className="glass-panel" style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
-                        <div style={{ width: 64, height: 64, borderRadius: 12, background: 'rgba(0,0,0,0.6)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4 }}>
-                          <img src="/textures/shirt_front.png" alt="Shirt" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      <div key={idx} className="glass-panel cart-item-row">
+                        <div className="cart-item-img-wrap">
+                          <img src="/textures/shirt_front.png" alt="Shirt" />
                         </div>
                         <div style={{ flex: 1 }}>
                           <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: 13, fontWeight: 700, color: '#F5F3ED' }}>
@@ -270,7 +271,7 @@ export const ProductPurchaseSection: React.FC<ProductPurchaseSectionProps> = ({
 
               {/* Footer Summary */}
               {cartItems.length > 0 && (
-                <div style={{ paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="cart-drawer-footer">
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 12, color: '#8A8882' }}>
                     <span>SUBTOTAL</span>
                     <span style={{ color: '#F5F3ED', fontWeight: 700 }}>${totalPrice} USD</span>

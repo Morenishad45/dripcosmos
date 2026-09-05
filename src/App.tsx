@@ -20,18 +20,22 @@ export const App: React.FC = () => {
   const [cartItems, setCartItems] = useState<Array<{ size: string; quantity: number }>>([]);
 
   const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
+  const isTouchDragging = useRef(false);
   const currentDragY = useRef(0);
   const lenisRef = useRef<Lenis | null>(null);
 
   // Initialize Lenis Smooth Scroll
   useEffect(() => {
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
     const lenis = new Lenis({
-      duration: 1.4,
+      duration: isMobileDevice ? 1.0 : 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 0.9,
+      touchMultiplier: 1.2,
     });
 
     lenisRef.current = lenis;
@@ -56,25 +60,54 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Handle Drag to Rotate 360°
+  // Handle Drag to Rotate 360° with Touch-Safe Distinction
   const handlePointerDown = (e: React.PointerEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest('button') || target.closest('a') || target.closest('.glass-panel-elevated') || target.closest('.story-interactive-card')) return;
+    if (
+      target.closest('button') ||
+      target.closest('a') ||
+      target.closest('.glass-panel-elevated') ||
+      target.closest('.story-interactive-card') ||
+      target.closest('.product-preview-box') ||
+      target.closest('.available-drops-pane')
+    ) return;
+
+    // Only activate 3D interaction in the unboxing zone
+    if (scrollProgress > 0.85) return;
 
     setIsDragging(true);
     dragStartX.current = e.clientX;
+    dragStartY.current = e.clientY;
     currentDragY.current = dragRotationY;
+    isTouchDragging.current = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return;
     const deltaX = e.clientX - dragStartX.current;
+    const deltaY = e.clientY - dragStartY.current;
+
+    // If on touch device, distinguish horizontal rotate vs vertical scroll intent
+    if (e.pointerType === 'touch') {
+      if (!isTouchDragging.current) {
+        if (Math.abs(deltaY) > Math.abs(deltaX) + 4) {
+          // Intent is vertical page scrolling; cancel 3D drag so scroll flows freely
+          setIsDragging(false);
+          return;
+        }
+        if (Math.abs(deltaX) > 8) {
+          isTouchDragging.current = true;
+        }
+      }
+    }
+
     const sensitivity = 0.008;
     setDragRotationY(currentDragY.current + deltaX * sensitivity);
   };
 
   const handlePointerUp = () => {
     setIsDragging(false);
+    isTouchDragging.current = false;
   };
 
   // Add To Cart Handler
@@ -173,8 +206,15 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* FLOATING UNBOXING HUD OVERLAY */}
-      <div className="hud-stage-card glass-panel">
+      {/* FLOATING UNBOXING HUD OVERLAY (Smoothly fades out during catalog transition) */}
+      <div
+        className="hud-stage-card glass-panel"
+        style={{
+          opacity: Math.max(0, Math.min(1, (0.76 - scrollProgress) / 0.08)),
+          pointerEvents: scrollProgress > 0.72 ? 'none' : undefined,
+          transition: 'opacity 0.25s ease',
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span className="pulse-dot" />
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.25em', color: 'var(--accent-gold)', textTransform: 'uppercase' }}>
@@ -189,8 +229,15 @@ export const App: React.FC = () => {
         </p>
       </div>
 
-      {/* Right Progress Meter HUD */}
-      <div className="hud-progress-meter">
+      {/* Right Progress Meter HUD (Smoothly fades out during catalog transition) */}
+      <div
+        className="hud-progress-meter"
+        style={{
+          opacity: Math.max(0, Math.min(1, (0.76 - scrollProgress) / 0.08)),
+          pointerEvents: scrollProgress > 0.72 ? 'none' : undefined,
+          transition: 'opacity 0.25s ease',
+        }}
+      >
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.15em', color: 'var(--text-muted)' }}>
           {Math.round(scrollProgress * 100)}%
         </span>
@@ -221,10 +268,10 @@ export const App: React.FC = () => {
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.4em', color: 'var(--accent-gold)', textTransform: 'uppercase', display: 'block', marginBottom: 16 }}>
               COLLECTOR'S EDITION • DROP 01
             </span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(36px, 7vw, 84px)', fontWeight: 700, letterSpacing: '0.2em', color: '#F5F3ED', marginBottom: 16 }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px, 7vw, 84px)', fontWeight: 700, letterSpacing: '0.2em', color: '#F5F3ED', marginBottom: 16 }}>
               DRIP COSMOS
             </h1>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(12px, 2vw, 16px)', color: 'rgba(212, 208, 197, 0.75)', letterSpacing: '0.25em', textTransform: 'uppercase', fontWeight: 300 }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(11px, 2vw, 16px)', color: 'rgba(212, 208, 197, 0.75)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 300 }}>
               "MANIFESTED NOT MANUFACTURED."
             </p>
           </div>
@@ -237,35 +284,11 @@ export const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Section 2: Box Lid Opening */}
-        <section className="unboxing-step-section align-left">
-          <div className="glass-panel story-card-overlay">
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.3em', color: 'var(--accent-gold)', display: 'block', marginBottom: 8 }}>
-              INNER LID MANIFESTO
-            </span>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, color: '#F5F3ED', marginBottom: 12 }}>
-              "YOU DON'T FOLLOW TRENDS. YOU SET YOUR ORBIT."
-            </h2>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Every package is stamped with the celestial seal. As the lid hinges backward, the sacred inner cavity is revealed.
-            </p>
-          </div>
-        </section>
+        {/* Section 2: Box Lid Opening Scroll Pacing */}
+        <section className="unboxing-step-section" aria-hidden="true" />
 
-        {/* Section 3: Tissue Paper Reveal */}
-        <section className="unboxing-step-section align-right">
-          <div className="glass-panel story-card-overlay" style={{ textAlign: 'right' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.3em', color: 'var(--accent-gold)', display: 'block', marginBottom: 8 }}>
-              MONOGRAM TISSUE WRAP
-            </span>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, color: '#F5F3ED', marginBottom: 12 }}>
-              PROTECTED & NUMBERED
-            </h2>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Enclosed in custom-printed DC planetary tissue, sealed with the signature "Limited Edition" round insignia.
-            </p>
-          </div>
-        </section>
+        {/* Section 3: Tissue Paper Reveal Scroll Pacing */}
+        <section className="unboxing-step-section" aria-hidden="true" />
 
         {/* Editorial Lore, Animal Kingdom Constellation & Commerce Checkout */}
         <div className="editorial-sections-wrapper">
@@ -280,14 +303,14 @@ export const App: React.FC = () => {
         </div>
 
         {/* Minimal Footer */}
-        <footer style={{ position: 'relative', zIndex: 15, width: '100%', padding: '60px 36px', borderTop: '1px solid rgba(255,255,255,0.1)', background: '#050505', pointerEvents: 'auto' }}>
-          <div style={{ maxWidth: 1300, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', padding: 2, background: 'rgba(20,20,20,0.9)', border: '1px solid rgba(229, 169, 60, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/brand/logo_black.png" alt="Drip Cosmos Official Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} />
+        <footer className="site-footer">
+          <div className="site-footer-inner">
+            <div className="site-footer-brand">
+              <div className="site-footer-logo">
+                <img src="/brand/logo_black.png" alt="Drip Cosmos Official Logo" />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: 14, fontWeight: 700, letterSpacing: '0.2em', color: '#F5F3ED' }}>
+                <span className="footer-brand-title">
                   DRIP COSMOS
                 </span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#8A8882' }}>/</span>
@@ -295,14 +318,14 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.15em', color: '#8A8882' }}>
+            <p className="site-footer-copyright">
               © {new Date().getFullYear()} DRIP COSMOS. ALL RIGHTS RESERVED. MANIFESTED NOT MANUFACTURED.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: '#8A8882' }}>
-              <span style={{ cursor: 'pointer' }}>TERMS</span>
-              <span style={{ cursor: 'pointer' }}>AUTHENTICITY</span>
-              <span style={{ cursor: 'pointer' }}>ORBIT SUPPORT</span>
+            <div className="site-footer-links">
+              <span>TERMS</span>
+              <span>AUTHENTICITY</span>
+              <span>ORBIT SUPPORT</span>
             </div>
           </div>
         </footer>

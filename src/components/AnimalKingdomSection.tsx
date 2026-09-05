@@ -56,6 +56,16 @@ export const AnimalKingdomSection: React.FC = () => {
     setZoomOrigin({ x, y });
   };
 
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isMagnified) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+    setZoomOrigin({ x, y });
+  };
+
   const handleNextImage = () => {
     sound.playClick();
     setActiveGalleryIdx((prev) => (prev < EAGLE_GALLERY.length - 1 ? prev + 1 : 0));
@@ -362,6 +372,7 @@ export const AnimalKingdomSection: React.FC = () => {
                 }
               }}
               onMouseMove={handleMouseMove}
+              onTouchMove={handleTouchMove}
             >
               {/* Previous Arrow */}
               <button
@@ -441,7 +452,7 @@ export const AnimalKingdomSection: React.FC = () => {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-                  {activeGalleryIdx + 1} OF {EAGLE_GALLERY.length} • {isMagnified ? 'MOVE CURSOR TO PAN FABRIC • CLICK TO RESET' : 'CLICK PHOTO TO MAGNIFY 2.2X • ESC TO CLOSE'}
+                  {activeGalleryIdx + 1} OF {EAGLE_GALLERY.length} • {isMagnified ? 'DRAG / SWIPE TO PAN FABRIC • TAP TO RESET' : 'CLICK OR TAP PHOTO TO MAGNIFY 2.2X • ESC TO CLOSE'}
                 </span>
               </div>
             </div>
